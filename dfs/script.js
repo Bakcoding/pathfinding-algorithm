@@ -5,6 +5,7 @@ let startCell = null;
 let endCell = null;
 let isMouseDown = false;
 let isDragModeWall = true;
+let isCancelled = false;
 
 function createGrid() {
   const container = document.getElementById("grid-container");
@@ -82,6 +83,7 @@ function onCellClick(cellDiv) {
 }
 
 function resetGrid() {
+  isCancelled = true; 
   startCell = null;
   endCell = null;
   createGrid();
@@ -97,6 +99,7 @@ function getDirectionVectors() {
 }
 
 async function startDFS() {
+  isCancelled = false;
   const directions = getDirectionVectors();
 
   let exploredCount = 0;
@@ -114,6 +117,7 @@ async function startDFS() {
   visited[startCell.y][startCell.x] = true;
 
   while (stack.length > 0) {
+    if (isCancelled) break;
     const current = stack.pop();
 
     if (current !== startCell && current !== endCell) {
@@ -129,6 +133,7 @@ async function startDFS() {
     }
 
     for (const [dx, dy] of directions) {
+      if (isCancelled) break;
       const nx = current.x + dx;
       const ny = current.y + dy;
       if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
@@ -150,6 +155,7 @@ async function reconstructDFSPath(prev, end) {
   let current = end;
   let length = 0;
   while (true) {
+    if (isCancelled) break;
     const prevCell = prev[current.y][current.x];
     if (!prevCell || prevCell === startCell) break;
     current = prevCell;

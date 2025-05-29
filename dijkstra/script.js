@@ -8,6 +8,8 @@ let endCell = null;
 let waypoints = [];
 let isMouseDown = false;
 let isDragModeWall = true;
+let isCancelled = false;
+
 const MAX_WAYPOINTS = 5;
 
 function createGrid() {
@@ -94,6 +96,7 @@ function onCellClick(cellDiv) {
 }
 
 function resetGrid() {
+  isCancelled = true; 
   startCell = null;
   endCell = null;
   createGrid();
@@ -128,6 +131,7 @@ async function dijkstraWithPath(start, goal, visualize = false) {
   const visualizationQueue = [];
 
   while (pq.length > 0) {
+    if (isCancelled) break;
     pq.sort((a, b) => dist[a.y][a.x] - dist[b.y][b.x]);
     const current = pq.shift();
     if (current === goal) break;
@@ -138,6 +142,7 @@ async function dijkstraWithPath(start, goal, visualize = false) {
     }
 
     for (const neighbor of getNeighbors(current)) {
+      if (isCancelled) break;
       if (neighbor.isWall || visited[neighbor.y][neighbor.x]) continue;
       const alt = dist[current.y][current.x] + 1;
       if (alt < dist[neighbor.y][neighbor.x]) {
@@ -155,13 +160,20 @@ async function dijkstraWithPath(start, goal, visualize = false) {
     await new Promise(resolve => {
       function animateExploration(queue) {
         if (queue.length === 0) {
-          for (const cell of debugOpen) cell.cell.classList.remove("open");
-          for (const cell of debugClosed) cell.cell.classList.remove("closed");
+          for (const cell of debugOpen) {
+            if (isCancelled) break;
+            cell.cell.classList.remove("open");
+          }
+          for (const cell of debugClosed) {
+            if (isCancelled) break;
+            cell.cell.classList.remove("closed");
+          }
           resolve();
           return;
         }
         const cellsToProcess = Math.min(queue.length, 50);
         for (let i = 0; i < cellsToProcess; i++) {
+          if (isCancelled) break;
           const item = queue.shift();
           if (item.type === 'closed') {
             item.cell.classList.add("closed");
@@ -180,6 +192,7 @@ async function dijkstraWithPath(start, goal, visualize = false) {
   const path = [];
   let node = goal;
   while (node && node !== start) {
+    if (isCancelled) break;
     path.push(node);
     node = prev[node.y][node.x];
   }
@@ -190,6 +203,7 @@ async function dijkstraWithPath(start, goal, visualize = false) {
 }
 
 async function startDijkstraWaypoints() {
+  isCancelled = false;
   const debug = document.getElementById("debugToggle").checked;
   if (!startCell || !endCell) {
     alert("Start and End points required");
@@ -206,9 +220,11 @@ async function startDijkstraWaypoints() {
   const perms = permute(waypoints);
 
   for (const wp of perms) {
+    if (isCancelled) break;
     const sequence = [startCell, ...wp, endCell];
     let fullPath = [], total = 0, exploredSum = 0, failed = false;
     for (let i = 0; i < sequence.length - 1; i++) {
+      if (isCancelled) break;
       const res = await dijkstraWithPath(sequence[i], sequence[i + 1], debug);
       if (!res.path.length) {
         failed = true;
@@ -231,6 +247,7 @@ async function startDijkstraWaypoints() {
   await new Promise(resolve => {
     const pathVisualizationQueue = [];
     for (const cell of minPath) {
+      if (isCancelled) break;
       if (cell !== startCell && cell !== endCell && !waypoints.includes(cell)) {
         pathVisualizationQueue.push(cell.cell);
       }
@@ -242,6 +259,7 @@ async function startDijkstraWaypoints() {
       }
       const cellsToProcess = Math.min(queue.length, 1);
       for (let i = 0; i < cellsToProcess; i++) {
+        if (isCancelled) break;
         const cellDiv = queue.shift();
         cellDiv.classList.add("path");
       }
@@ -259,8 +277,10 @@ function permute(arr) {
   if (arr.length === 0) return [[]];
   const result = [];
   for (let i = 0; i < arr.length; i++) {
+    if (isCancelled) break;
     const rest = arr.slice(0, i).concat(arr.slice(i + 1));
     for (const p of permute(rest)) {
+      if (isCancelled) break;
       result.push([arr[i], ...p]);
     }
   }

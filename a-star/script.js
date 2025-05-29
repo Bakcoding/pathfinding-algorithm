@@ -1,5 +1,6 @@
 let isMouseDown = false;
 let isDragModeWall = true;
+let isCancelled = false;
 
 const rows = 20;
 const cols = 20;
@@ -86,9 +87,12 @@ function onCellClick(cellDiv) {
 }
 
 function resetGrid() {
+  isCancelled = true; 
   startCell = null;
   endCell = null;
   createGrid();
+  document.getElementById("exploredCount").textContent = "0";
+  document.getElementById("pathLength").textContent = "0";
 }
 
 function heuristic(a, b) {
@@ -103,6 +107,7 @@ function heuristic(a, b) {
 
 async function startAStar() {
   let exploredCount = 0;
+  isCancelled = false;
   document.getElementById("exploredCount").textContent = "0";
   document.getElementById("pathLength").textContent = "0";
 
@@ -117,6 +122,7 @@ async function startAStar() {
   fScore[startCell.y][startCell.x] = heuristic(startCell, endCell);
 
   while (openSet.length > 0) {
+    if (isCancelled) break;
     openSet.sort((a, b) => fScore[a.y][a.x] - fScore[b.y][b.x]);
     const current = openSet.shift();
 
@@ -129,6 +135,7 @@ async function startAStar() {
     }
 
     for (const neighbor of getNeighbors(current)) {
+      if (isCancelled) break;
       if (neighbor.isWall) continue;
       const moveCost = neighbor._moveCost || 1;
       const tentativeG = gScore[current.y][current.x] + moveCost;
@@ -157,6 +164,7 @@ async function startAStar() {
 async function reconstructPath(cameFrom, current) {
   let length = 0;
   while (true) {
+    if (isCancelled) break;
     const prev = cameFrom[current.y][current.x];
     if (!prev || prev === startCell) break;
     current = prev;
@@ -177,6 +185,7 @@ function getNeighbors(cell) {
 
   const result = [];
   for (const [dx, dy] of dirs) {
+    if (isCancelled) break;
     const nx = cell.x + dx;
     const ny = cell.y + dy;
     if (nx >= 0 && nx < cols && ny >= 0 && ny < rows) {
