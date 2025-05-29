@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pathfinding Visualizer</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        h1 {
+            margin-bottom: 3rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .card {
+            text-decoration: none;
+            color: #333 !important;
+            font-weight: bold;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 1rem;
+            text-align: center;
+            transition: transform 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card a {
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Pathfinding Algorithm Visualizer</h1>
+    <div class="grid">
+        <a class="card" href="bfs/index.html">
+            BFS<br>(Breadth-First Search)
+        </a>
+        <a class="card" href="dfs/index.html">
+            DFS<br>(Depth-First Search)
+        </a>
+        <a class="card" href="a-star/index.html">
+            A* Algorithm
+        </a>
+        <a class="card" href="dijkstra/index.html">
+            Dijkstra's Algorithm
+        </a>
+    </div>
+</body>
+
+</html>

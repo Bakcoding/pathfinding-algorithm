@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>DFS Pathfinding Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+    <h1 style="text-align: center; margin-top: 20px;">Depth-first Pathfinding</h1>
+    
+    <div id="controls">
+      <button onclick="startDFS()">Start</button>
+      <button onclick="resetGrid()">Reset</button>
+      <label><input type="checkbox" id="wallToggle"> Wall Mode</label>
+      <label style="margin-left: 10px;">
+        Direction:
+        <select id="directionMode">
+          <option value="cw">Clockwise</option>
+          <option value="ccw">Counter Clockwise</option>
+        </select>
+      </label>
+    </div>
+
+    <div id="info">
+      Explored: <span id="exploredCount">0</span>,
+      Path Length: <span id="pathLength">0</span>
+    </div>
+
+    <div id="grid-container"></div>
+
+    <div id="legend">
+      <div><span class="cell start"></span> Start</div>
+      <div><span class="cell end"></span> End</div>
+      <div><span class="cell wall"></span> Wall</div>
+      <div><span class="cell open"></span> Open Set</div>
+      <div><span class="cell closed"></span> Closed Set</div>
+      <div><span class="cell path"></span> Final Path</div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
